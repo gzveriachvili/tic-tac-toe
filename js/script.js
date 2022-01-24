@@ -33,3 +33,72 @@
 
 // If 3 markers connect, and the marker is X, then the user won. If 3 markers connect, and the marker is O, then user lost.
 // If no empty cells are left, and there is no 3-way connection, then its a draw.
+
+// Game board object created with a module, since we only need of this object
+const gameBoard = (() => {
+  let board = [];
+  const boardArea = document.querySelector('.board-area');
+  const createBoard = () => {
+    for (let i = 0; i < 9; i++) {
+      board[i] = null;
+    }
+  };
+  createBoard();
+  const displayGameBoard = () => {
+    for (let i = 0; i <= board.length - 1; i++) {
+      const cell = document.createElement('div');
+      cell.classList.add('cell');
+      boardArea.appendChild(cell);
+      switch (i) {
+        case 0:
+          break;
+        case 1:
+          cell.classList.add('border-left');
+          cell.classList.add('border-right');
+          break;
+        case 2:
+          break;
+        case 3:
+          cell.classList.add('border-top');
+          cell.classList.add('border-bottom');
+          break;
+        case 4:
+          cell.classList.add('border-left');
+          cell.classList.add('border-bottom');
+          cell.classList.add('border-top');
+          cell.classList.add('border-right');
+          break;
+        case 5:
+          cell.classList.add('border-top');
+          cell.classList.add('border-bottom');
+          break;
+        case 6:
+          break;
+        case 7:
+          cell.classList.add('border-left');
+          cell.classList.add('border-right');
+          break;
+        case 8:
+          break;
+      }
+    }
+  };
+  return { board, displayGameBoard };
+})();
+
+console.log(gameBoard.board);
+gameBoard.displayGameBoard();
+
+// Player objects created with a factory function and NOT a module, since we'll need multiple of them
+const playerFactory = (name, marker) => {
+  const getName = () => name;
+  const getMarker = () => marker;
+
+  return { getName, getMarker };
+};
+
+// Object created in a module with the intention of controlling the flow of the game
+const gameFlow = (() => {})();
+
+const player1 = playerFactory('Bob', 'X');
+console.log(player1.getName());
