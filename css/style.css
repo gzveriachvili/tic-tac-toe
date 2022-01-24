@@ -5,6 +5,17 @@ thisPurple: #6C00FF
 thisGrey: #474746
 */
 
+::-moz-selection {
+  /* Code for Firefox */
+  color: #fff;
+  background: #6c00ff;
+}
+
+::selection {
+  color: #fff;
+  background: #6c00ff;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -58,6 +69,10 @@ body {
   border: none;
 }
 
+.buttons button:hover {
+  background: #e9b62c;
+}
+
 .top span.smaller {
   font-family: 'Nunito', sans-serif;
   font-weight: 900;
@@ -75,4 +90,14 @@ body {
 
 .buttons button:hover {
   cursor: pointer;
+}
+
+.buttons button i {
+  margin-right: 15px;
+}
+
+.buttons button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
