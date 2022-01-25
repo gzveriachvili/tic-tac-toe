@@ -142,3 +142,10 @@ body {
 .border-top {
   border-top: 3px solid #fff;
 }
+
+.turn-text {
+  color: #fff;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 900;
+  font-size: 25px;
+}

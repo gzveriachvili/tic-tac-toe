@@ -12,6 +12,17 @@
 // result should be displayed, and a button should appear in order to restart the game.
 
 // Given your inputs, what are the steps necessary to return the desired output? The algorithm in pseudo code for this problem:
+
+// The user selects MULTIPLAYER:
+// 1. Player 1 and Player 2 names get displayed on left side along with their markers and scores. Go back button on top of names.
+// 2. Buttons dissapear
+// 3. Gameboard gets drawn
+// 4. Color the winning path
+// 5. clear cells and restart game, increment score
+// 6. If user clicks on go back button:
+//a. delete player names, scores, go back button and the game board too
+//b. display multiplayer and computer buttons
+
 // When the user clicks on one of the 9 possible cells
 // Check whether or not that cell is empty. Cells are items in an array, by default they are undefined.
 // If the cell is empty, update the value of the cell in the array, and change the content of the cell to the user marker.
@@ -34,71 +45,190 @@
 // If 3 markers connect, and the marker is X, then the user won. If 3 markers connect, and the marker is O, then user lost.
 // If no empty cells are left, and there is no 3-way connection, then its a draw.
 
+// Button factory
+const buttonFactory = (icon) => {
+  const buttonsArea = document.querySelector('.buttons');
+  const createButton = (name) => {
+    const button = document.createElement('button');
+    button.textContent = name;
+    buttonsArea.appendChild(button);
+    switch (icon) {
+      case 'multi':
+        button.setAttribute('id', 'multi');
+        const iconM = document.createElement('i');
+        iconM.classList.add('fas');
+        iconM.classList.add('fa-user-friends');
+        button.prepend(iconM);
+        break;
+      case 'cpu':
+        button.setAttribute('id', 'cpu');
+        const iconC = document.createElement('i');
+        iconC.classList.add('fas');
+        iconC.classList.add('fa-microchip');
+        button.prepend(iconC);
+        break;
+      default:
+        button.setAttribute('id', icon);
+        button.setAttribute(
+          'style',
+          'background: none; border: 2px solid #ffc833; color: #ffc833; margin-bottom: 15px; width: 10px;'
+        );
+    }
+  };
+  return { createButton };
+};
+
+const multiplayerButton = buttonFactory('multi');
+const computerButton = buttonFactory('cpu');
+
+multiplayerButton.createButton('Multiplayer');
+computerButton.createButton('VS Computer');
+
+// Player objects created with a factory function and NOT a module, since we'll need multiple of them
+const Player = (name, marker) => {
+  const getName = () => name;
+  const getMarker = () => marker;
+  return { getName, getMarker };
+};
+
 // Game board object created with a module, since we only need of this object
 const gameBoard = (() => {
   let board = [];
+  const player1 = Player('Player 1', 'O');
+  const player2 = Player('Player 2', 'X');
+
   const boardArea = document.querySelector('.board-area');
+
   const createBoard = () => {
     for (let i = 0; i < 9; i++) {
-      board[i] = null;
+      board[i] = '';
     }
   };
+
   createBoard();
-  const displayGameBoard = () => {
-    for (let i = 0; i <= board.length - 1; i++) {
+
+  return { board, boardArea, player1, player2, createBoard };
+})();
+
+console.log(gameBoard.board);
+
+// Module containing the DOM elements of the game
+const displayController = (() => {
+  const para1 = document.createElement('p');
+  const multiBtn = document.querySelector('#multi');
+  const cpuBtn = document.querySelector('#cpu');
+  // draw board
+  const drawBoard = () => {
+    for (let i = 0; i <= gameBoard.board.length - 1; i++) {
       const cell = document.createElement('div');
       cell.classList.add('cell');
-      boardArea.appendChild(cell);
+      cell.setAttribute(`data-index`, `${i}`);
+      gameBoard.boardArea.appendChild(cell);
       switch (i) {
-        case 0:
-          break;
         case 1:
           cell.classList.add('border-left');
           cell.classList.add('border-right');
-          break;
-        case 2:
           break;
         case 3:
           cell.classList.add('border-top');
           cell.classList.add('border-bottom');
           break;
         case 4:
-          cell.classList.add('border-left');
-          cell.classList.add('border-bottom');
           cell.classList.add('border-top');
           cell.classList.add('border-right');
+          cell.classList.add('border-bottom');
+          cell.classList.add('border-left');
           break;
         case 5:
           cell.classList.add('border-top');
           cell.classList.add('border-bottom');
           break;
-        case 6:
-          break;
         case 7:
           cell.classList.add('border-left');
           cell.classList.add('border-right');
           break;
-        case 8:
-          break;
       }
     }
   };
-  return { board, displayGameBoard };
+  // Multiplayer button clicked
+  const multiplayerSelected = () => {
+    multiBtn.addEventListener('click', () => {
+      const buttonsArea = document.querySelector('.buttons');
+      drawBoard();
+      const turn = document.querySelector('.turn-text');
+      para1.classList.add('turnover');
+      para1.textContent = `${gameBoard.player1.getName()}'s turn`;
+      buttonsArea.removeChild(buttonsArea.childNodes[0]);
+      buttonsArea.removeChild(buttonsArea.childNodes[0]);
+      turn.appendChild(para1);
+      const backButton = buttonFactory('back');
+      backButton.createButton('go back');
+    });
+    // VS AI button clicked... for now I'll work on the player vs player part first
+  };
+
+  const checkForWin = () => {
+    let container = document.querySelectorAll('.board-area div');
+    if (
+      gameBoard.board[0] == 'X' &&
+      gameBoard.board[1] == 'X' &&
+      gameBoard.board[2] == 'X'
+    ) {
+      displayController.para1.textContent = `${gameBoard.player1.getName()} won!`;
+      gameBoard.createBoard();
+      const clearCells = () => {
+        for (const cell of container) {
+          cell.textContent = '';
+        }
+      };
+      setTimeout(clearCells, 2000);
+    }
+  };
+
+  const computerSelected = () => {
+    cpuBtn.addEventListener('click', () => {
+      alert('Under construction');
+    });
+  };
+  return { multiplayerSelected, computerSelected, para1, checkForWin };
 })();
 
-console.log(gameBoard.board);
-gameBoard.displayGameBoard();
+const gameController = (() => {
+  displayController.multiplayerSelected();
+  let counter = 2;
+  const clickCell = () => {
+    window.addEventListener('click', (e) => {
+      if (e.path[0].classList.contains('cell')) {
+        let cellNumber = e.path[0].getAttribute('data-index');
+        let cellContent = e.path[0];
+        console.log(cellNumber);
+        if (counter % 2 !== 0) {
+          if (gameBoard.board[cellNumber] == '') {
+            displayController.para1.textContent = `${gameBoard.player1.getName()}'s turn`;
 
-// Player objects created with a factory function and NOT a module, since we'll need multiple of them
-const playerFactory = (name, marker) => {
-  const getName = () => name;
-  const getMarker = () => marker;
+            gameBoard.board[cellNumber] = gameBoard.player1.getMarker();
+            cellContent.setAttribute('style', 'color:#842dfd');
+            cellContent.textContent = gameBoard.board[cellNumber];
+          } else {
+            counter--;
+          }
+        } else {
+          if (gameBoard.board[cellNumber] == '') {
+            displayController.para1.textContent = `${gameBoard.player2.getName()}'s turn`;
 
-  return { getName, getMarker };
-};
-
-// Object created in a module with the intention of controlling the flow of the game
-const gameFlow = (() => {})();
-
-const player1 = playerFactory('Bob', 'X');
-console.log(player1.getName());
+            gameBoard.board[cellNumber] = gameBoard.player2.getMarker();
+            cellContent.setAttribute('style', 'color:#ffc833');
+            cellContent.textContent = gameBoard.board[cellNumber];
+          } else {
+            counter--;
+          }
+        }
+        displayController.checkForWin();
+        console.log(gameBoard.board);
+        counter++;
+        console.log(counter);
+      }
+    });
+  };
+  clickCell();
+})();
