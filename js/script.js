@@ -9,41 +9,6 @@
 // What’s the desired output?
 // There will be three different possible outcomes. The user can either window, lose, or draw. The user can
 // win by placing 3 X markers either horizontally, vertically, or diagonally. Once one of these occur, the
-// result should be displayed, and a button should appear in order to restart the game.
-
-// Given your inputs, what are the steps necessary to return the desired output? The algorithm in pseudo code for this problem:
-
-// The user selects MULTIPLAYER:
-// 1. Player 1 and Player 2 names get displayed on left side along with their markers and scores. Go back button on top of names.
-// 2. Buttons dissapear
-// 3. Gameboard gets drawn
-// 4. Color the winning path
-// 5. clear cells and restart game, increment score
-// 6. If user clicks on go back button:
-//a. delete player names, scores, go back button and the game board too
-//b. display multiplayer and computer buttons
-
-// When the user clicks on one of the 9 possible cells
-// Check whether or not that cell is empty. Cells are items in an array, by default they are undefined.
-// If the cell is empty, update the value of the cell in the array, and change the content of the cell to the user marker.
-// User2 or computer's turn: same process.
-// How to check if the markers connect vertically, horizontally or diagonally?
-// gameBoard = [0, 1, 2,
-//             3, 4, 5,
-//             6, 7, 8]
-// HORIZONTALLY:
-// If the first 3 items in the array are the same, game over.
-// If the 4th, 5th, and 6th items are the same, game over.
-// If the 7th 8th and 6th items are the same, game over.
-// VERTICALLY:
-// If the first, 4th, and 7th are the same, game over.
-// If the 2nd, 5th, and 8th are the same, game over.
-// If the 3rd, 6th, and 9th are the same, game over.
-// DIAGONALLY:
-// If the first, 5th, and 9th are the same, game over.
-
-// If 3 markers connect, and the marker is X, then the user won. If 3 markers connect, and the marker is O, then user lost.
-// If no empty cells are left, and there is no 3-way connection, then its a draw.
 
 // Button factory
 const buttonFactory = (icon) => {
@@ -163,14 +128,29 @@ const displayController = (() => {
       turn.appendChild(para1);
       const backButton = buttonFactory('back');
       backButton.createButton('go back');
+
+      const backBtn = document.querySelector('#back');
+      backBtn.addEventListener('click', () => {
+        location.reload();
+      });
     });
     // VS AI button clicked... for now I'll work on the player vs player part first
   };
 
-  const gameEnd = () => {
+  const gameEnd = (marker) => {
     let container = document.querySelectorAll('.board-area div');
-    displayController.para1.textContent = `${gameBoard.player1.getName()} won!`;
+    if (marker === 'X') {
+      displayController.para1.textContent = `${gameBoard.player1.getName()} won!`;
+    } else if (marker === 'O') {
+      displayController.para1.textContent = `${gameBoard.player2.getName()} won!`;
+    } else if (marker === 'D') {
+      displayController.para1.textContent = 'Draw!';
+    }
+
     displayController.para1.classList.toggle('won');
+    for (const cell of container) {
+      cell.classList.toggle('noclick');
+    }
 
     gameBoard.createBoard();
     const clearCells = () => {
@@ -179,8 +159,11 @@ const displayController = (() => {
       }
       displayController.para1.textContent = `${gameBoard.player1.getName()}'s turn`;
       displayController.para1.classList.toggle('won');
+      for (const cell of container) {
+        cell.classList.toggle('noclick');
+      }
     };
-    setTimeout(clearCells, 1500);
+    setTimeout(clearCells, 1800);
   };
 
   let checkForWin = () => {
@@ -189,21 +172,140 @@ const displayController = (() => {
       gameBoard.board[1] === 'X' &&
       gameBoard.board[2] === 'X'
     ) {
-      gameEnd();
+      gameEnd('X');
+    } else if (
+      gameBoard.board[0] === 'O' &&
+      gameBoard.board[1] === 'O' &&
+      gameBoard.board[2] === 'O'
+    ) {
+      gameEnd('O');
+    }
+
+    if (
+      gameBoard.board[3] === 'X' &&
+      gameBoard.board[4] === 'X' &&
+      gameBoard.board[5] === 'X'
+    ) {
+      gameEnd('X');
+    } else if (
+      gameBoard.board[3] === 'O' &&
+      gameBoard.board[4] === 'O' &&
+      gameBoard.board[5] === 'O'
+    ) {
+      gameEnd('O');
+    }
+
+    if (
+      gameBoard.board[6] === 'X' &&
+      gameBoard.board[7] === 'X' &&
+      gameBoard.board[8] === 'X'
+    ) {
+      gameEnd('X');
+    } else if (
+      gameBoard.board[6] === 'O' &&
+      gameBoard.board[7] === 'O' &&
+      gameBoard.board[8] === 'O'
+    ) {
+      gameEnd('O');
+    }
+
+    if (
+      gameBoard.board[0] === 'X' &&
+      gameBoard.board[3] === 'X' &&
+      gameBoard.board[6] === 'X'
+    ) {
+      gameEnd('X');
+    } else if (
+      gameBoard.board[0] === 'O' &&
+      gameBoard.board[3] === 'O' &&
+      gameBoard.board[6] === 'O'
+    ) {
+      gameEnd('O');
+    }
+
+    if (
+      gameBoard.board[1] === 'X' &&
+      gameBoard.board[4] === 'X' &&
+      gameBoard.board[7] === 'X'
+    ) {
+      gameEnd('X');
+    } else if (
+      gameBoard.board[1] === 'O' &&
+      gameBoard.board[4] === 'O' &&
+      gameBoard.board[7] === 'O'
+    ) {
+      gameEnd('O');
+    }
+
+    if (
+      gameBoard.board[2] === 'X' &&
+      gameBoard.board[5] === 'X' &&
+      gameBoard.board[8] === 'X'
+    ) {
+      gameEnd('X');
+    } else if (
+      gameBoard.board[2] === 'O' &&
+      gameBoard.board[5] === 'O' &&
+      gameBoard.board[8] === 'O'
+    ) {
+      gameEnd('O');
+    }
+
+    if (
+      gameBoard.board[0] === 'X' &&
+      gameBoard.board[4] === 'X' &&
+      gameBoard.board[8] === 'X'
+    ) {
+      gameEnd('X');
+    } else if (
+      gameBoard.board[0] === 'O' &&
+      gameBoard.board[4] === 'O' &&
+      gameBoard.board[8] === 'O'
+    ) {
+      gameEnd('O');
+    }
+
+    if (
+      gameBoard.board[2] === 'X' &&
+      gameBoard.board[4] === 'X' &&
+      gameBoard.board[6] === 'X'
+    ) {
+      gameEnd('X');
+    } else if (
+      gameBoard.board[2] === 'O' &&
+      gameBoard.board[4] === 'O' &&
+      gameBoard.board[6] === 'O'
+    ) {
+      gameEnd('O');
+    }
+
+    if (!gameBoard.board.includes('')) {
+      gameEnd('D');
     }
   };
 
   const computerSelected = () => {
     cpuBtn.addEventListener('click', () => {
-      alert('Under construction');
+      alert(
+        'Under construction. Only the multiplayer mode is available for now.'
+      );
     });
   };
-  return { multiplayerSelected, computerSelected, para1, checkForWin };
+
+  return {
+    multiplayerSelected,
+    computerSelected,
+    para1,
+    checkForWin,
+  };
 })();
 
 const gameController = (() => {
   displayController.multiplayerSelected();
-  let counter = 2;
+
+  displayController.computerSelected();
+
+  let counter = 0;
   console.log('Counter after declaration: ', counter);
   const clickCell = () => {
     window.addEventListener('click', (e) => {
@@ -238,6 +340,9 @@ const gameController = (() => {
         console.log(lastChar);
         if (lastChar == 'n') {
           counter++;
+          console.log(counter);
+        } else {
+          counter = 0;
         }
       }
     });

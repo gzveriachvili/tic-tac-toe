@@ -154,3 +154,7 @@ body {
   color: chartreuse;
   font-size: 50px;
 }
+
+.noclick {
+  pointer-events: none;
+}
