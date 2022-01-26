@@ -149,3 +149,8 @@ body {
   font-weight: 900;
   font-size: 25px;
 }
+
+.won {
+  color: chartreuse;
+  font-size: 50px;
+}

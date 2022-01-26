@@ -167,21 +167,29 @@ const displayController = (() => {
     // VS AI button clicked... for now I'll work on the player vs player part first
   };
 
-  const checkForWin = () => {
+  const gameEnd = () => {
     let container = document.querySelectorAll('.board-area div');
+    displayController.para1.textContent = `${gameBoard.player1.getName()} won!`;
+    displayController.para1.classList.toggle('won');
+
+    gameBoard.createBoard();
+    const clearCells = () => {
+      for (const cell of container) {
+        cell.textContent = '';
+      }
+      displayController.para1.textContent = `${gameBoard.player1.getName()}'s turn`;
+      displayController.para1.classList.toggle('won');
+    };
+    setTimeout(clearCells, 1500);
+  };
+
+  let checkForWin = () => {
     if (
-      gameBoard.board[0] == 'X' &&
-      gameBoard.board[1] == 'X' &&
-      gameBoard.board[2] == 'X'
+      gameBoard.board[0] === 'X' &&
+      gameBoard.board[1] === 'X' &&
+      gameBoard.board[2] === 'X'
     ) {
-      displayController.para1.textContent = `${gameBoard.player1.getName()} won!`;
-      gameBoard.createBoard();
-      const clearCells = () => {
-        for (const cell of container) {
-          cell.textContent = '';
-        }
-      };
-      setTimeout(clearCells, 2000);
+      gameEnd();
     }
   };
 
@@ -196,12 +204,12 @@ const displayController = (() => {
 const gameController = (() => {
   displayController.multiplayerSelected();
   let counter = 2;
+  console.log('Counter after declaration: ', counter);
   const clickCell = () => {
     window.addEventListener('click', (e) => {
       if (e.path[0].classList.contains('cell')) {
         let cellNumber = e.path[0].getAttribute('data-index');
         let cellContent = e.path[0];
-        console.log(cellNumber);
         if (counter % 2 !== 0) {
           if (gameBoard.board[cellNumber] == '') {
             displayController.para1.textContent = `${gameBoard.player1.getName()}'s turn`;
@@ -223,10 +231,14 @@ const gameController = (() => {
             counter--;
           }
         }
-        displayController.checkForWin();
         console.log(gameBoard.board);
-        counter++;
-        console.log(counter);
+        displayController.checkForWin();
+        let textArr = displayController.para1.textContent.split('');
+        let lastChar = textArr[textArr.length - 1];
+        console.log(lastChar);
+        if (lastChar == 'n') {
+          counter++;
+        }
       }
     });
   };
