@@ -61,7 +61,6 @@ const gameBoard = (() => {
   let board = [];
   const player1 = Player('Player 1', 'O');
   const player2 = Player('Player 2', 'X');
-
   const boardArea = document.querySelector('.board-area');
 
   const createBoard = () => {
@@ -302,7 +301,6 @@ const displayController = (() => {
 
 const gameController = (() => {
   displayController.multiplayerSelected();
-
   displayController.computerSelected();
 
   let counter = 0;
@@ -315,7 +313,6 @@ const gameController = (() => {
         if (counter % 2 !== 0) {
           if (gameBoard.board[cellNumber] == '') {
             displayController.para1.textContent = `${gameBoard.player1.getName()}'s turn`;
-
             gameBoard.board[cellNumber] = gameBoard.player1.getMarker();
             cellContent.setAttribute('style', 'color:#842dfd');
             cellContent.textContent = gameBoard.board[cellNumber];
@@ -325,7 +322,6 @@ const gameController = (() => {
         } else {
           if (gameBoard.board[cellNumber] == '') {
             displayController.para1.textContent = `${gameBoard.player2.getName()}'s turn`;
-
             gameBoard.board[cellNumber] = gameBoard.player2.getMarker();
             cellContent.setAttribute('style', 'color:#ffc833');
             cellContent.textContent = gameBoard.board[cellNumber];
@@ -337,10 +333,8 @@ const gameController = (() => {
         displayController.checkForWin();
         let textArr = displayController.para1.textContent.split('');
         let lastChar = textArr[textArr.length - 1];
-        console.log(lastChar);
         if (lastChar == 'n') {
           counter++;
-          console.log(counter);
         } else {
           counter = 0;
         }
